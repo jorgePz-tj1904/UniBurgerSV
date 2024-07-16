@@ -29,21 +29,27 @@ app.get('/', async (req, res) => {
 });
 
 app.post('/create_preference', async(req,res)=>{
-  console.log(req.body);
+  const arrayProductos = req.body;
+
+  const newArray=arrayProductos.map(e=>{
+    return {
+        title:e.nombre,
+        quantity: 1,
+        unit_price:e.precio,
+        currency_id: 'ARS'
+    }
+  });
+
   try {
     const body ={
-      items:[{
-        title:req.body.title,
-        quantity: Number(req.body.quantity),
-        unit_price: Number(req.body.price),
-        currency_id: 'ARS'
-      }],
+      items:newArray,
       back_urls:{
-        success:"http://localhost:5173/",
-        failure:"http://localhost:5173/",
-        pending: "http://localhost:5173/"
+        success:"https://www.mercadopago.com.ar/developers/es/docs/checkout-pro/integrate-checkout-pro/web#editor_6",
+        failure:"https://www.mercadopago.com.ar/developers/es/docs/checkout-pro/integrate-checkout-pro/web#editor_6",
+        pending:"https://www.mercadopago.com.ar/developers/es/docs/checkout-pro/integrate-checkout-pro/web#editor_6"
       },
-      auto_return: "approved"
+      auto_return: "approved",
+      // notification_url: "http://localhost:5173/success"
     };
     console.log(body);
     const preference = new Preference(client);
@@ -54,6 +60,10 @@ app.post('/create_preference', async(req,res)=>{
   } catch (error) {
     res.status(500).send("errror al crear la preferencia", error);
   }
+});
+
+app.post('/success',(req, res)=>{
+  console.log("funca nashe");
 })
 
 app.get('/hamburguesas', async (req, res) => {
