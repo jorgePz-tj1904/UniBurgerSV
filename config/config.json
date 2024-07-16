@@ -1,11 +1,11 @@
 {
   "development": {
-    "username": "root",
-    "password": null,
-    "database": "database_development",
-    "host": "127.0.0.1",
-    "dialect": "sqlite",
-    "storage": "database.sqlite"
+    "username": "postgres",
+    "password": "1904",
+    "database": "UniBurger",
+    "host": "localhost",
+    "dialect": "postgres",
+    "logging": false
   },
   "test": {
     "username": "root",
