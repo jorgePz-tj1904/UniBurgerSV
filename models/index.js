@@ -7,7 +7,17 @@ const db = {};
 
 let sequelize;
 if (config.use_env_variable) {
-  sequelize = new Sequelize(process.env[config.use_env_variable], config);
+  if (!process.env[config.use_env_variable]) {
+    throw new Error(`La variable de entorno ${config.use_env_variable} no está definida.`);
+  }
+  sequelize = new Sequelize(process.env[config.use_env_variable], {
+    dialect: config.dialect,
+    protocol: config.dialect,
+    logging: config.logging,
+    dialectOptions: {
+      ssl: true
+    }
+  });
 } else {
   sequelize = new Sequelize(config.database, config.username, config.password, config);
 }
