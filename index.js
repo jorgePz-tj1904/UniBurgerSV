@@ -49,7 +49,7 @@ app.post('/create_preference', async(req,res)=>{
         pending:"https://www.mercadopago.com.ar/developers/es/docs/checkout-pro/integrate-checkout-pro/web#editor_6"
       },
       auto_return: "approved",
-      // notification_url: "http://localhost:5173/success"
+      notification_url: "https://uniburgersv.onrender.com/success"
     };
     console.log(body);
     const preference = new Preference(client);
@@ -62,8 +62,14 @@ app.post('/create_preference', async(req,res)=>{
   }
 });
 
-app.post('/success',(req, res)=>{
-  console.log("funca nashe");
+app.post('/success',async(req, res)=>{
+  try {
+    const response = await req.body;
+    console.log(response);
+    res.status(200).send("se realizo una compra")
+  } catch (error) {
+    
+  }
 })
 
 app.get('/hamburguesas', async (req, res) => {
