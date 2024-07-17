@@ -64,8 +64,8 @@ app.post('/create_preference', async(req,res)=>{
 
 app.post('/success',async(req, res)=>{
   try {
-    const response = await req.body;
-    console.log(response);
+    const id = await req.query.id;
+    console.log(id);
     res.status(200).send("se realizo una compra")
   } catch (error) {
     
