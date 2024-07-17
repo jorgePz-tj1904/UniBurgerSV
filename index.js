@@ -72,9 +72,35 @@ app.post('/success', async (req, res) => {
 
   try {
     const response = await payment.get({ id: id });
-    console.log(response);
+    const paymentData = response; // Puedes ajustar esto según cómo obtienes la respuesta real de payment.get
 
-    res.status(200).send("Se realizó una compra");
+    const paymentDetails = {
+      paymentDate: paymentData.date_approved,
+      paymentStatus: paymentData.status,
+      paymentStatusDetail: paymentData.status_detail,
+      payer: {
+        email: paymentData.payer.email,
+        firstName: paymentData.payer.first_name,
+        lastName: paymentData.payer.last_name,
+        id: paymentData.payer.id,
+        identification: paymentData.payer.identification,
+        phone: paymentData.payer.phone
+      },
+      paymentMethod: {
+        id: paymentData.payment_method.id,
+        type: paymentData.payment_type_id,
+        issuerId: paymentData.payment_method.issuer_id
+      },
+      transactionAmount: paymentData.transaction_amount,
+      currency: paymentData.currency_id,
+      description: paymentData.description,
+      additionalInfo: paymentData.additional_info
+    };
+
+    console.log(paymentDetails);
+
+    res.status(200).send(paymentDetails);
+
   } catch (error) {
     console.error('Error al obtener el pago:', error);
     res.status(500).send({
