@@ -69,7 +69,6 @@ app.post('/success', async (req, res) => {
     payment.get({
       id: id,
     }).then(console.log).catch(console.log);
-    console.log(data);
 
     res.status(200).send("Se realizó una compra");
   } catch (error) {
