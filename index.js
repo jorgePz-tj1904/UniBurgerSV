@@ -63,25 +63,24 @@ app.post('/create_preference', async(req,res)=>{
   }
 });
 
-app.post('/success',async(req, res)=>{
-  const id = await req.query.id;
+app.post('/success', async (req, res) => {
+  const id = req.query['data.id'];
   try {
-    const response = axios.get(`https://api.mercadopago.com/v1/payments/${id}`,{
-      headers:{
-        'Authorization': `Bearer ${client.accessToken}`
+    const response = await axios.get(`https://api.mercadopago.com/v1/payments/${id}`, {
+      headers: {
+        'Authorization': `Bearer APP_USR-3061065036601802-071517-0191331bb80a7fe5c612ed01c33c96a3-1901237197`
       }
-    })
+    });
 
-    if(response.ok){
-      const data = await response.json();
-      console.log(data);
-    }
+    const data = response.data; // Accede a los datos directamente
+    console.log(data);
 
-    res.status(200).send("se realizo una compra")
+    res.status(200).send("Se realizó una compra");
   } catch (error) {
-    res.status(500).send(error)
+    console.error(error); // Muestra el error en la consola para depuración
+    res.status(500).send(error.message);
   }
-})
+});
 
 app.get('/hamburguesas', async (req, res) => {
   try {
