@@ -11,7 +11,7 @@ const {ValidarUsuario}=require('./controllers/validarUser');
 const { login } = require('./controllers/login');
 const { editUsuario } = require('./controllers/editUsuario');
 
-const { MercadoPagoConfig, Preference } = require('mercadopago');
+const { MercadoPagoConfig, Preference, Payment } = require('mercadopago');
 const { default: axios } = require('axios');
 
 const app = express();
@@ -22,7 +22,7 @@ app.use(cors());
 app.use(morgan('dev'));
 
 const client = new MercadoPagoConfig({ accessToken: 'APP_USR-3061065036601802-071517-0191331bb80a7fe5c612ed01c33c96a3-1901237197' });
-
+const payment = new Payment(client);
 
 
 app.get('/', async (req, res) => {
@@ -64,15 +64,11 @@ app.post('/create_preference', async(req,res)=>{
 });
 
 app.post('/success', async (req, res) => {
-  const id = req.query['data.id'];
+  const id = req.query.id;
   try {
-    const response = await axios.get(`https://api.mercadopago.com/v1/payments/${id}`, {
-      headers: {
-        'Authorization': `Bearer APP_USR-3061065036601802-071517-0191331bb80a7fe5c612ed01c33c96a3-1901237197`
-      }
-    });
-
-    const data = response.data; // Accede a los datos directamente
+    payment.get({
+      id: id,
+    }).then(console.log).catch(console.log);
     console.log(data);
 
     res.status(200).send("Se realizó una compra");
