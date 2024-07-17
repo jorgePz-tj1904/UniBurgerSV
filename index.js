@@ -12,6 +12,7 @@ const { login } = require('./controllers/login');
 const { editUsuario } = require('./controllers/editUsuario');
 
 const { MercadoPagoConfig, Preference } = require('mercadopago');
+const { default: axios } = require('axios');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -63,12 +64,22 @@ app.post('/create_preference', async(req,res)=>{
 });
 
 app.post('/success',async(req, res)=>{
+  const id = await req.query.id;
   try {
-    const id = await req.query.id;
-    console.log(id);
+    const response = axios.get(`https://api.mercadopago.com/v1/payments/${id}`,{
+      headers:{
+        'Authorization': `Bearer ${client.accessToken}`
+      }
+    })
+
+    if(response.ok){
+      const data = await response.json();
+      console.log(data);
+    }
+
     res.status(200).send("se realizo una compra")
   } catch (error) {
-    
+    res.status(500).send(error)
   }
 })
 
