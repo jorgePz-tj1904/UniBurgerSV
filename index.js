@@ -65,15 +65,22 @@ app.post('/create_preference', async(req,res)=>{
 
 app.post('/success', async (req, res) => {
   const id = req.query.id;
+
+  if (!id) {
+    return res.status(400).send("ID de pago no proporcionado.");
+  }
+
   try {
-    payment.get({
-      id: id,
-    }).then(console.log).catch(console.log);
+    const response = await payment.get({ id: id });
+    console.log(response);
 
     res.status(200).send("Se realizó una compra");
   } catch (error) {
-    console.error(error); // Muestra el error en la consola para depuración
-    res.status(500).send(error.message);
+    console.error('Error al obtener el pago:', error);
+    res.status(500).send({
+      message: 'Error al obtener el pago',
+      error: error.message
+    });
   }
 });
 
