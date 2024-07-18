@@ -10,9 +10,12 @@ const {searchBurger} = require('./controllers/searchBurger');
 const {ValidarUsuario}=require('./controllers/validarUser');
 const { login } = require('./controllers/login');
 const { editUsuario } = require('./controllers/editUsuario');
+const {io} = require("socket.io-client")
 
 const { MercadoPagoConfig, Preference, Payment } = require('mercadopago');
 const { default: axios } = require('axios');
+
+const socket = io("https://chatback-lmc1.onrender.com");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -98,6 +101,7 @@ app.post('/success', async (req, res) => {
     };
 
     console.log(paymentDetails);
+    socket.emit(paymentDetails);
 
     res.status(200).send(paymentDetails);
 
