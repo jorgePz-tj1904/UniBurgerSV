@@ -2,23 +2,32 @@ const express = require('express');
 const { sequelize, Burgers, Usuarios } = require('./models');
 const cors = require('cors');
 const morgan = require('morgan');
-const {postBurger} = require('./controllers/postBurger');
-const {deleteBurger} = require('./controllers/deleteBurger');
-const {postUsuario} = require('./controllers/postUsuario');
-const {deleteUsuario} = require('./controllers/deleteUser');
-const {searchBurger} = require('./controllers/searchBurger');
-const {ValidarUsuario}=require('./controllers/validarUser');
+const { postBurger } = require('./controllers/postBurger');
+const { deleteBurger } = require('./controllers/deleteBurger');
+const { postUsuario } = require('./controllers/postUsuario');
+const { deleteUsuario } = require('./controllers/deleteUser');
+const { searchBurger } = require('./controllers/searchBurger');
+const { ValidarUsuario } = require('./controllers/validarUser');
 const { login } = require('./controllers/login');
 const { editUsuario } = require('./controllers/editUsuario');
-const {io} = require("socket.io-client")
+const http = require('http');
+const { Server } = require('socket.io');
 
 const { MercadoPagoConfig, Preference, Payment } = require('mercadopago');
 const { default: axios } = require('axios');
 
-const socket = io("https://chatback-lmc1.onrender.com");
-
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+// Crea el servidor HTTP
+const server = http.createServer(app);
+
+// Inicializa Socket.IO
+const io = new Server(server, {
+  cors: {
+    origin: '*',
+  }
+});
 
 app.use(express.json());
 app.use(cors());
@@ -27,37 +36,36 @@ app.use(morgan('dev'));
 const client = new MercadoPagoConfig({ accessToken: 'APP_USR-3061065036601802-071517-0191331bb80a7fe5c612ed01c33c96a3-1901237197' });
 const payment = new Payment(client);
 
-
 app.get('/', async (req, res) => {
   res.send('¡Bienvenido a la hamburguesería!');
 });
 
-app.post('/create_preference', async(req,res)=>{
+app.post('/create_preference', async (req, res) => {
   const arrayProductos = req.body;
 
-  const newArray=arrayProductos.map(e=>{
+  const newArray = arrayProductos.map(e => {
     return {
-        title:e.nombre,
-        quantity: 1,
-        unit_price:e.precio,
-        currency_id: 'ARS'
+      title: e.nombre,
+      quantity: 1,
+      unit_price: e.precio,
+      currency_id: 'ARS'
     }
   });
 
   try {
-    const body ={
-      items:newArray,
-      back_urls:{
-        success:"https://www.mercadopago.com.ar/developers/es/docs/checkout-pro/integrate-checkout-pro/web#editor_6",
-        failure:"https://www.mercadopago.com.ar/developers/es/docs/checkout-pro/integrate-checkout-pro/web#editor_6",
-        pending:"https://www.mercadopago.com.ar/developers/es/docs/checkout-pro/integrate-checkout-pro/web#editor_6"
+    const body = {
+      items: newArray,
+      back_urls: {
+        success: "https://www.mercadopago.com.ar/developers/es/docs/checkout-pro/integrate-checkout-pro/web#editor_6",
+        failure: "https://www.mercadopago.com.ar/developers/es/docs/checkout-pro/integrate-checkout-pro/web#editor_6",
+        pending: "https://www.mercadopago.com.ar/developers/es/docs/checkout-pro/integrate-checkout-pro/web#editor_6"
       },
       auto_return: "approved",
       notification_url: "https://uniburgersv.onrender.com/success"
     };
     console.log(body);
     const preference = new Preference(client);
-    const result = await preference.create({body});
+    const result = await preference.create({ body });
     res.status(200).json({
       id: result.id
     });
@@ -101,7 +109,7 @@ app.post('/success', async (req, res) => {
     };
 
     console.log(paymentDetails);
-    socket.emit(paymentDetails);
+    io.emit('paymentDetails', paymentDetails);
 
     res.status(200).send(paymentDetails);
 
@@ -113,6 +121,7 @@ app.post('/success', async (req, res) => {
     });
   }
 });
+
 
 app.get('/hamburguesas', async (req, res) => {
   try {
@@ -254,9 +263,8 @@ app.delete('/deleteUsuario/:id', async(req,res)=>{
 })
 
 
-
-app.listen(PORT, async () => {
-  console.log(`Servidor escuchando en http://localhost:${PORT}`);
+server.listen(PORT, async () => {
+  console.log(`Servidor corriendo en el puerto ${PORT}`);
   try {
     await sequelize.authenticate();
     console.log('Conexión a la base de datos establecida con éxito.');
