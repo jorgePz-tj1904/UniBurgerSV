@@ -25,10 +25,12 @@ if (config.use_env_variable) {
 // Carga de modelos manualmente
 const BurgerModel = require('./Burgers')(sequelize, Sequelize.DataTypes);
 const UsuarioModel = require('./Usuarios')(sequelize, Sequelize.DataTypes);
+const PaymentsModel = require('./Pagos')(sequelize, Sequelize.DataTypes); // Cargar el modelo Payments
 
 // Agrega los modelos al objeto db
 db[BurgerModel.name] = BurgerModel;
 db[UsuarioModel.name] = UsuarioModel;
+db[PaymentsModel.name] = PaymentsModel; // Agregar el modelo Payments
 
 Object.keys(db).forEach(modelName => {
   if (db[modelName].associate) {

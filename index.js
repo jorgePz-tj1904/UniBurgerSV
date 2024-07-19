@@ -36,6 +36,8 @@ app.use(morgan('dev'));
 const client = new MercadoPagoConfig({ accessToken: 'APP_USR-3061065036601802-071517-0191331bb80a7fe5c612ed01c33c96a3-1901237197' });
 const payment = new Payment(client);
 
+const Payments = require('./models/Pagos')(sequelize);
+
 app.get('/', async (req, res) => {
   res.send('¡Bienvenido a la hamburguesería!');
 });
@@ -107,6 +109,8 @@ app.post('/success', async (req, res) => {
       description: paymentData.description,
       additionalInfo: paymentData.additional_info
     };
+
+    await Payments.create(paymentDetails);
 
     console.log(paymentDetails);
     io.emit('paymentDetails', paymentDetails);
