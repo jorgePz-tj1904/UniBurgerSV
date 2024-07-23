@@ -85,7 +85,7 @@ app.post('/success', async (req, res) => {
 
   try {
     const response = await payment.get({ id: id });
-    const paymentData = response; // Puedes ajustar esto según cómo obtienes la respuesta real de payment.get
+    const paymentData = response;
 
     const paymentDetails = {
       paymentDate: paymentData.date_approved,
