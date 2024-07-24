@@ -15,6 +15,7 @@ const { Server } = require('socket.io');
 
 const { MercadoPagoConfig, Preference, Payment } = require('mercadopago');
 const { default: axios } = require('axios');
+const Pagos = require('./models/Pagos');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -110,7 +111,7 @@ app.post('/success', async (req, res) => {
       additionalInfo: paymentData.additional_info
     };
 
-    await Payments.create(paymentDetails);
+    await Pagos.create(paymentDetails);
 
     console.log(paymentDetails);
     io.emit('paymentDetails', paymentDetails);
