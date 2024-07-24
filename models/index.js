@@ -6,11 +6,9 @@ const config = require(__dirname + '/../config/config.json')[env];
 const db = {};
 
 let sequelize;
-if (config.use_env_variable) {
-  if (!process.env[config.use_env_variable]) {
-    throw new Error(`La variable de entorno ${config.use_env_variable} no está definida.`);
-  }
-  sequelize = new Sequelize(process.env[config.use_env_variable], {
+
+if (env === 'production') {
+  sequelize = new Sequelize(config.use_env_variable, {
     dialect: config.dialect,
     protocol: config.dialect,
     logging: config.logging,

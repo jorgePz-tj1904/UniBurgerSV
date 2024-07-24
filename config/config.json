@@ -16,6 +16,7 @@
   },
   "production": {
     "use_env_variable": "postgresql://uniburgerbdd_user:WLn1TKRPlh1Ovx2yRiVA22nYT66SEgBH@dpg-cqba3nuehbks73dmmbm0-a.oregon-postgres.render.com/uniburgerbdd",
-    "dialect": "postgres"
+    "dialect": "postgres",
+    "logging": false
   }
 }
